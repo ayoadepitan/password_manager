@@ -1,5 +1,6 @@
 import getpass
 import re
+import csv
 
 
 def check_website(website):
@@ -35,7 +36,16 @@ def get_info():
         if check_email(email):
             break
         print('Not a valid email. Please try again')
+
     password = getpass.getpass()
+
+    write_to_csv(website, email, password)
+
+
+def write_to_csv(website, email, password):
+    with open('database.csv', mode='a', newline='') as database:
+        csv_writer = csv.writer(database)
+        csv_writer.writerow([website, email, password])
 
 
 get_info()

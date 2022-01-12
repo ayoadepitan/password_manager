@@ -1,6 +1,5 @@
 import requests
 import hashlib
-import sys
 
 # Using the first 5 hexidecimal digits returns the number of times password has been breached
 
@@ -39,7 +38,7 @@ def pwned_api_check(password):
 # Then lets the user know how many times their password was
 
 
-def main(args):
+def password_check(args):
     for password in args:
         count = pwned_api_check(password)
         if count:
@@ -48,7 +47,3 @@ def main(args):
         else:
             print(f'{password} was NOT found. Carry on!!')
     return 'DONE'
-
-
-if __name__ == '__main__':
-    sys.exit(main(sys.argv[1:]))

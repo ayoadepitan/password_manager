@@ -3,6 +3,7 @@ import re
 import csv
 import random
 import string
+from checkmypass import password_check
 
 
 def check_website(website):
@@ -77,4 +78,32 @@ def write_to_csv(website, email, password):
         csv_writer.writerow([website, email, password])
 
 
-get_info()
+def read_csv():
+    pass
+
+
+def main():
+    print('What do you want to do?')
+    while True:
+        try:
+            choice = int(
+                input('\n0 - End Session\n1 - Create new password\n2 - Find password\n3 - Check passwords\n'))
+        except ValueError:
+            print('\nPlease enter a valid number.')
+            continue
+        if choice == 0:
+            print('\nSession Ended')
+            break
+        if choice == 1:
+            get_info()
+        elif choice == 2:
+            read_csv()
+        elif choice == 3:
+            password_check(input(
+                'Check the number of times a password has been breach.\nEnter any number of passwords: \n').split())
+        else:
+            print('\nNot a valid choice. Try again...')
+
+
+if __name__ == '__main__':
+    main()

@@ -1,4 +1,5 @@
 import getpass
+from os import close
 import re
 import csv
 import random
@@ -32,21 +33,7 @@ def password_generator(size):
     return ''.join(random.choices(string.ascii_letters + string.digits + '!@?#$&', k=size))
 
 
-def get_info():
-    # Checks if input is valid website
-    while True:
-        website = input('Website: ')
-        if check_website(website):
-            break
-        print('Not a valid website. Please try again')
-
-    # Checks if input is valid email
-    while True:
-        email = input('Email: ')
-        if check_email(email):
-            break
-        print('Not a valid email. Please try again')
-
+def get_password():
     # Asks if you want to generate a password
     # If yes then it runs password_generator() and returns random string
     # If no then it asks for you to enter your own password that's hidden.
@@ -67,7 +54,33 @@ def get_info():
             break
         else:
             print('Not a valid answer. Try again...')
+    return password
 
+
+def get_website():
+    # Checks if input is valid website
+    while True:
+        website = input('Website: ')
+        if check_website(website):
+            break
+        print('Not a valid website. Please try again')
+    return website
+
+
+def get_email():
+    # Checks if input is valid email
+    while True:
+        email = input('Email: ')
+        if check_email(email):
+            break
+        print('Not a valid email. Please try again')
+    return email
+
+
+def get_info():
+    website = get_website()
+    email = get_email()
+    password = get_password()
     write_to_csv(website, email, password)
 
 
@@ -79,7 +92,74 @@ def write_to_csv(website, email, password):
 
 
 def read_csv():
-    pass
+    with open('database.csv') as csvfile:
+        reader = csv.DictReader(csvfile)
+        for row in reader:
+            print(row)
+
+
+def edit_csv():
+    with open('database.csv') as csvfile:
+        reader = csv.DictReader(csvfile)
+        while True:
+            website = input(
+                'Enter the full website url you would like to change the website/email/password for: ')
+
+            for row in reader:
+                if row.get('Website') == website:
+                    isThere = True
+                    new_row = row
+                    break
+                else:
+                    isThere = False
+
+            if isThere:
+                break
+            else:
+                print('Website does not exist. Try again...')
+
+        print('Select which one to change...')
+
+        new_row
+        new_rows = []
+
+        while True:
+            try:
+                choice2 = int(
+                    input('\n1 - Password\n2 - Email\n3 - Website\n'))
+            except ValueError:
+                print('\nPlease enter a valid number.')
+                continue
+            if choice2 == 1:
+                new_password = get_password()
+                for key, value in new_row.items():
+                    if key == 'Password':
+                        new_row[key] = new_password
+            if choice2 == 2:
+                new_email = get_email()
+                for key, value in new_row.items():
+                    if key == 'Email':
+                        new_row[key] = new_email
+            if choice2 == 3:
+                new_website = get_website()
+                for key, value in new_row.items():
+                    if key == 'Website':
+                        new_row[key] = new_website
+            break
+
+        new_rows.append(new_row)
+        for row in reader:
+            new_row = row
+            new_rows.append(new_row)
+        print(new_rows)
+
+    with open('database.csv', 'w', newline='') as csvfile:
+        fieldnames = ['Website', 'Email', 'Password']
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+
+        writer.writeheader()
+        for row in new_rows:
+            writer.writerow(row)
 
 
 def main():
@@ -87,20 +167,22 @@ def main():
     while True:
         try:
             choice = int(
-                input('\n0 - End Session\n1 - Create new password\n2 - Find password\n3 - Check passwords\n'))
+                input('\n0 - End Session\n1 - Create new password\n2 - Find password\n3 - Check passwords\n4 - Edit Info'))
         except ValueError:
             print('\nPlease enter a valid number.')
             continue
         if choice == 0:
             print('\nSession Ended')
             break
-        if choice == 1:
+        elif choice == 1:
             get_info()
         elif choice == 2:
             read_csv()
         elif choice == 3:
             password_check(input(
                 'Check the number of times a password has been breach.\nEnter any number of passwords: \n').split())
+        elif choice == 4:
+            edit_csv()
         else:
             print('\nNot a valid choice. Try again...')
 

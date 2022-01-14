@@ -98,60 +98,55 @@ def read_csv():
             print(row)
 
 
-def edit_csv():
+def website_exist():
     with open('database.csv') as csvfile:
         reader = csv.DictReader(csvfile)
-        while True:
-            website = input(
-                'Enter the full website url you would like to change the website/email/password for: ')
-
-            for row in reader:
-                if row.get('Website') == website:
-                    isThere = True
-                    new_row = row
-                    break
-                else:
-                    isThere = False
-
-            if isThere:
-                break
-            else:
-                print('Website does not exist. Try again...')
-
-        print('Select which one to change...')
-
-        new_row
-        new_rows = []
-
-        while True:
-            try:
-                choice2 = int(
-                    input('\n1 - Password\n2 - Email\n3 - Website\n'))
-            except ValueError:
-                print('\nPlease enter a valid number.')
-                continue
-            if choice2 == 1:
-                new_password = get_password()
-                for key, value in new_row.items():
-                    if key == 'Password':
-                        new_row[key] = new_password
-            if choice2 == 2:
-                new_email = get_email()
-                for key, value in new_row.items():
-                    if key == 'Email':
-                        new_row[key] = new_email
-            if choice2 == 3:
-                new_website = get_website()
-                for key, value in new_row.items():
-                    if key == 'Website':
-                        new_row[key] = new_website
-            break
-
-        new_rows.append(new_row)
+        website = input(
+            'Enter the full website url you would like to change the website/email/password for: ')
         for row in reader:
-            new_row = row
-            new_rows.append(new_row)
-        print(new_rows)
+            if row['Website'] == website:
+                return row
+        print('Website does not exist. Try again...')
+        return None
+
+
+def edit_csv():
+    new_row = None
+    while new_row == None:
+        new_row = website_exist()
+
+    print('Select which one to change...')
+
+    while True:
+        try:
+            choice2 = int(
+                input('\n1 - Password\n2 - Email\n3 - Website\n'))
+        except ValueError:
+            print('\nPlease enter a valid number.')
+            continue
+        if choice2 == 1:
+            new_password = get_password()
+            for key, value in new_row.items():
+                if key == 'Password':
+                    new_row[key] = new_password
+        if choice2 == 2:
+            new_email = get_email()
+            for key, value in new_row.items():
+                if key == 'Email':
+                    new_row[key] = new_email
+        if choice2 == 3:
+            new_website = get_website()
+            for key, value in new_row.items():
+                if key == 'Website':
+                    new_row[key] = new_website
+        break
+
+    with open('database.csv') as csvfile:
+        reader = csv.DictReader(csvfile)
+        new_rows = []
+        for row in reader:
+            new_rows.append(
+                new_row) if new_row['Website'] == row['Website'] else new_rows.append(row)
 
     with open('database.csv', 'w', newline='') as csvfile:
         fieldnames = ['Website', 'Email', 'Password']
@@ -167,7 +162,7 @@ def main():
     while True:
         try:
             choice = int(
-                input('\n0 - End Session\n1 - Create new password\n2 - Find password\n3 - Check passwords\n4 - Edit Info'))
+                input('\n0 - End Session\n1 - Create new password\n2 - Find password\n3 - Check passwords\n4 - Edit Info\n'))
         except ValueError:
             print('\nPlease enter a valid number.')
             continue

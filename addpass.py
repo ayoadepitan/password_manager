@@ -102,12 +102,33 @@ def website_exist():
     with open('database.csv') as csvfile:
         reader = csv.DictReader(csvfile)
         website = input(
-            'Enter the full website url you would like to change the website/email/password for: ')
+            'Enter the full website url you would like to Edit/Delete: ')
         for row in reader:
             if row['Website'] == website:
                 return row
         print('Website does not exist. Try again...')
         return None
+
+
+def delete_website():
+    delete_row = None
+    while delete_row == None:
+        delete_row = website_exist()
+
+    new_rows = []
+    with open('database.csv') as csvfile:
+        reader = csv.DictReader(csvfile)
+        for row in reader:
+            if delete_row['Website'] != row['Website']:
+                new_rows.append(row)
+
+    with open('database.csv', 'w', newline='') as csvfile:
+        fieldnames = ['Website', 'Email', 'Password']
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+
+        writer.writeheader()
+        for row in new_rows:
+            writer.writerow(row)
 
 
 def edit_csv():
@@ -138,6 +159,7 @@ def edit_csv():
             new_website = get_website()
             for key, value in new_row.items():
                 if key == 'Website':
+                    website = new_row[key]
                     new_row[key] = new_website
         break
 
@@ -145,6 +167,9 @@ def edit_csv():
         reader = csv.DictReader(csvfile)
         new_rows = []
         for row in reader:
+            if new_website:
+                if website == row['Website']:
+                    new_rows.append(row)
             new_rows.append(
                 new_row) if new_row['Website'] == row['Website'] else new_rows.append(row)
 
@@ -162,7 +187,7 @@ def main():
     while True:
         try:
             choice = int(
-                input('\n0 - End Session\n1 - Create new password\n2 - Find password\n3 - Check passwords\n4 - Edit Info\n'))
+                input('\n0 - End Session\n1 - Create\n2 - List\n3 - Check\n4 - Edit\n5 - Delete\n'))
         except ValueError:
             print('\nPlease enter a valid number.')
             continue
@@ -178,6 +203,8 @@ def main():
                 'Check the number of times a password has been breach.\nEnter any number of passwords: \n').split())
         elif choice == 4:
             edit_csv()
+        elif choice == 5:
+            delete_website()
         else:
             print('\nNot a valid choice. Try again...')
 

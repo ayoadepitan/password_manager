@@ -133,6 +133,7 @@ def delete_website():
 
 def edit_csv():
     new_row = None
+    new_website = None
     while new_row == None:
         new_row = website_exist()
 
@@ -159,7 +160,7 @@ def edit_csv():
             new_website = get_website()
             for key, value in new_row.items():
                 if key == 'Website':
-                    website = new_row[key]
+                    old_website = new_row[key]
                     new_row[key] = new_website
         break
 
@@ -168,10 +169,11 @@ def edit_csv():
         new_rows = []
         for row in reader:
             if new_website:
-                if website == row['Website']:
-                    new_rows.append(row)
-            new_rows.append(
-                new_row) if new_row['Website'] == row['Website'] else new_rows.append(row)
+                new_rows.append(
+                    new_row) if old_website == row['Website'] else new_rows.append(row)
+            else:
+                new_rows.append(
+                    new_row) if new_row['Website'] == row['Website'] else new_rows.append(row)
 
     with open('database.csv', 'w', newline='') as csvfile:
         fieldnames = ['Website', 'Email', 'Password']
